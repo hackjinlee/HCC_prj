@@ -15,7 +15,15 @@ def test_dataloader():
     x_mat, y_lst, feature_names = loader.get(DataPurpose.Validation, 0, True)
 
 
-def train_model(model_type, use_feature_selection, target_type):
+def train_model(model_type, use_feature_selection, target_type, k=_FOLD_NUM):
+    '''
+    k-fold cross validation 방법으로 모델을 학습
+    :param model_type: 모델의 종류 (ModelTypes 중 하나)
+    :param use_feature_selection: feature를 선택할지 여부
+    :param target_type: 타겟의 종류 (TargetTypes 중 하나)
+    :param k: 몇 개의 fold를 진행할 지 여부
+    :return: 없음
+    '''
     print('train model %s - %s ' % (model_type.value, target_type.value))
     tag = '%s_%s' % (model_type.value, target_type.value)
     if use_feature_selection:
@@ -32,7 +40,7 @@ def train_model(model_type, use_feature_selection, target_type):
     use_small_param = False if use_feature_selection else True
     use_smote = True if use_feature_selection else False
 
-    for now_fold in range(_FOLD_NUM):
+    for now_fold in range(k):
         print(' %s fold start:' % now_fold)
         result_dict = gs_manager.fit(dev_loader, dev_loader, now_fold,
                                      use_feature_selection, use_small_param, use_smote)
@@ -47,7 +55,15 @@ def train_model(model_type, use_feature_selection, target_type):
                                         now_fold, pf_path, use_feature_selection)
 
 
-def test_model(model_type, use_feature_selection, target_type):
+def test_model(model_type, use_feature_selection, target_type, k=_FOLD_NUM):
+    '''
+    학습한 모델에 대해서 test set에서의 성능과 생존분석을 진행
+    :param model_type: 모델의 종류 (ModelTypes 중 하나)
+    :param use_feature_selection: feature를 선택할지 여부
+    :param target_type: 타겟의 종류 (TargetTypes 중 하나)
+    :param k: 몇 개의 fold를 진행할 지 여부
+    :return: 없음
+    '''
     print('test model %s - %s ' % (model_type.value, target_type.value))
     tag = '%s_%s' % (model_type.value, target_type.value)
     if use_feature_selection:
@@ -63,7 +79,7 @@ def test_model(model_type, use_feature_selection, target_type):
     gs_manager = GridSearchManager(model_type, result_direc)
     curve_type = CurveTypes.TTP if target_type != TargetTypes.OS else CurveTypes.OS
 
-    for now_fold in range(_FOLD_NUM):
+    for now_fold in range(k):
         print(' %s fold start:' % now_fold)
 
         model_path = '%s/model_%s.pkl' % (result_direc, now_fold)

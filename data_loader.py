@@ -6,18 +6,27 @@ import numpy as np
 
 
 class DataPurpose(enum.Enum):
+    '''
+    데이터 목적 - 학습, 검증, 테스트
+    '''
     Train = 'train'
     Validation = 'vali'
     Test = 'test'
 
 
 class TargetTypes(enum.Enum):
+    '''
+    타겟 종류 - 항암제 반응(PD vs non-PD), TTP 기준, OS 기준
+    '''
     BR = 'Best Response'
     PFS = 'Progression free survival'
     OS = 'Overall survival'
 
 
 class CurveTypes(enum.Enum):
+    '''
+    생존 분석 시 y축 설정
+    '''
     OS = 'overall_survival'
     TTP = 'time_to_progress'
 
@@ -194,6 +203,13 @@ class CsvDataLoader:
         return x_mat, y_arr, feature_lst
 
     def get_kaplanmeier_info(self, data_purpose, curve_type, now_fold):
+        '''
+        생존 분석을 하기위한 정보 전달
+        :param data_purpose: 데이터 목적
+        :param curve_type: TTP기준인지 OS기준인지
+        :param now_fold: 현재 fold
+        :return: time 정보, event 정보
+        '''
         df = self.df
         data_info = self.data_info
         fold_df = pd.read_csv(self.split_info_path)

@@ -28,7 +28,15 @@ class Metrics(enum.Enum):
     AUC = 'AUC'
     
 
-def run_survival_analysis(time_arr,event_arr,pred_arr, os_bins=np.arange(0,28,0.5)):
+def run_survival_analysis(time_arr,event_arr, pred_arr, os_bins=np.arange(0,28,0.5)):
+    '''
+    모델 예측결과에 따라서 생존 분석을 진행
+    :param time_arr: 실제 환자의 follow up 시간 정보
+    :param event_arr: 실제 환자의 event 정보 (TTP: 암진행여부, OS: 사망 여부)
+    :param pred_arr: 모델의 예측 결과
+    :param os_bins: 편의를 위해 모아둘 시간대 범위정보
+    :return: 결과를 저장한 dictionary
+    '''
     result_dict = dict()
     result_dict[_T] = []
     result_dict[_PE] = []
@@ -111,6 +119,12 @@ def export_cmdict(CM_dict, output_path, tag=None):
 
 
 def evaluate_model(actual_arr, pred_arr):
+    '''
+    모델 예측결과에 대한 성능 평가 (이진분류)
+    :param actual_arr: 실제 값
+    :param pred_arr: 예측 값
+    :return: 결과를 저장한 dictionary
+    '''
     tp = tn = fp = fn = 0
     for i in range(len(actual_arr)):
         predict = pred_arr[i]

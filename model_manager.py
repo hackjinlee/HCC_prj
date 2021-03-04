@@ -19,6 +19,9 @@ from common import *
 
 
 class ModelTypes(enum.Enum):
+    '''
+    모델의 종류
+    '''
     LR = 'LogisticRegression'
     CAT = 'CatBoost'
     LSVM = 'LinearSVM'
@@ -36,6 +39,16 @@ class GridSearchManager:
         self.output_direc = output_directory
 
     def fit(self, train_loader, vali_loader, now_fold, use_selected=False, use_small_param=False, use_smote=False):
+        '''
+        모델을 학습시킴
+        :param train_loader: 학습에 사용할 데이터 로더
+        :param vali_loader: 검증에 사용할 데이터 로더
+        :param now_fold: 현재 fold
+        :param use_selected: feature selection 을 적용할 지 여부
+        :param use_small_param: hyperparameter tuning 때 적은 수만 진행할 지 여부
+        :param use_smote: SMOTE로 oversampling을 적용할 지 여부
+        :return: 모델, 성능결과 등을 저장한 dictionary
+        '''
         x_train, y_train, _ = train_loader.get(DataPurpose.Train, now_fold, use_selected)
         x_vali, y_vali, _ = vali_loader.get(DataPurpose.Validation, now_fold, use_selected)
 
@@ -88,6 +101,16 @@ class GridSearchManager:
         return result_dict
 
     def predict_and_evaluate(self, model, data_loader, data_purpose, now_fold, output_path=None, use_selected=False):
+        '''
+        모델의 예측값을 얻고 성능을 평가함
+        :param model: 학습된 모델
+        :param data_loader: 성능을 평가할 데이터 로더
+        :param data_purpose: 데이터 목적
+        :param now_fold: 현재 fold
+        :param output_path: 결과를 출력할 경로 (입력 있을 경우만)
+        :param use_selected: feature selection 적용 여부
+        :return: 예측 값과 예측 성능이 저장된  dictionary
+        '''
         x_vali, y_vali, _ = data_loader.get(data_purpose, now_fold, use_selected)
 
         y_pred = model.predict(x_vali)
@@ -105,6 +128,13 @@ class GridSearchManager:
 
 
 def plot_shap_summary(model, x_matrix, feature_names):
+    '''
+    SHAP value를 plot
+    :param model:
+    :param x_matrix:
+    :param feature_names:
+    :return:
+    '''
     shap_values = model.get_feature_importance(data=Pool(x_matrix),
                                                type=EFstrType.ShapValues)[:, :-1]
 
@@ -112,6 +142,14 @@ def plot_shap_summary(model, x_matrix, feature_names):
 
 
 def export_feature_importance(model, output_path, tag, names):
+    '''
+    feature importance를 출력
+    :param model:
+    :param output_path:
+    :param tag:
+    :param names:
+    :return:
+    '''
     fi = model.get_feature_importance()
     line = '%s,%s\n' % (tag, ','.join(map(str, fi)))
     if not os.path.exists(output_path):
@@ -136,6 +174,13 @@ def export_importance_with_pandas(model, output_path, names):
 
 
 def oversample_with_smote(x_train, y_train, iterator=10):
+    '''
+    SMOTE를 이용하여 데이터를 oversampling 해줌.
+    :param x_train: 모델에 입력되는 데이터
+    :param y_train: 모델이 예측할 타겟
+    :param iterator: sampling 반복 정도
+    :return: oversampling 된 X, Y
+    '''
     sm = BorderlineSMOTE()
     x_train_sm, y_train_sm = sm.fit_sample(x_train, y_train)
     x_train_fin = []
@@ -164,6 +209,13 @@ def oversample_with_smote(x_train, y_train, iterator=10):
 
 
 def get_binary_model(model_type, opt_param=None, pos_weight=1):
+    '''
+    이진 분류용 기계학습 모델을 전달
+    :param model_type: 모델 종류
+    :param opt_param: hyperparameter 정보
+    :param pos_weight: positive case에 줄 weight 값
+    :return: 정의된 모델
+    '''
     rs = 881109
     if model_type == ModelTypes.LR:
         if opt_param is None:
@@ -203,6 +255,12 @@ def get_binary_model(model_type, opt_param=None, pos_weight=1):
 
 
 def get_model_params(model_type, use_small=False):
+    '''
+    hyperparameter tuning에 사용할 변수의 범위정보 전달
+    :param model_type: 모델 종류
+    :param use_small: 범위를 좁힐지 여부 (빠른 학습에 사용)
+    :return: 특정 변수와 변수 범위가 저장된 dictionary
+    '''
     if model_type == ModelTypes.LR:
         params = {
             "C": np.logspace(-3, 3, 7),
