@@ -20,7 +20,7 @@ from common import *
 
 class ModelTypes(enum.Enum):
     '''
-    모델의 종류
+    모델의 종류.
     '''
     LR = 'LogisticRegression'
     CAT = 'CatBoost'

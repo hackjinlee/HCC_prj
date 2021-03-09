@@ -62,7 +62,7 @@ def test_model(model_type, use_feature_selection, target_type, k=_FOLD_NUM):
     :param use_feature_selection: feature를 선택할지 여부
     :param target_type: 타겟의 종류 (TargetTypes 중 하나)
     :param k: 몇 개의 fold를 진행할 지 여부
-    :return: 없음
+    :return: 없음.
     '''
     print('test model %s - %s ' % (model_type.value, target_type.value))
     tag = '%s_%s' % (model_type.value, target_type.value)

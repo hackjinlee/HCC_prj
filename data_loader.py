@@ -208,7 +208,7 @@ class CsvDataLoader:
         :param data_purpose: 데이터 목적
         :param curve_type: TTP기준인지 OS기준인지
         :param now_fold: 현재 fold
-        :return: time 정보, event 정보
+        :return: time 정보, event 정보.
         '''
         df = self.df
         data_info = self.data_info

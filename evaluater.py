@@ -35,7 +35,7 @@ def run_survival_analysis(time_arr,event_arr, pred_arr, os_bins=np.arange(0,28,0
     :param event_arr: 실제 환자의 event 정보 (TTP: 암진행여부, OS: 사망 여부)
     :param pred_arr: 모델의 예측 결과
     :param os_bins: 편의를 위해 모아둘 시간대 범위정보
-    :return: 결과를 저장한 dictionary
+    :return: 결과를 저장한 dictionary.
     '''
     result_dict = dict()
     result_dict[_T] = []
